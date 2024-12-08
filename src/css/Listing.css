@@ -1,0 +1,13 @@
+.container-div{
+    display:flex;
+    flex-wrap:nowrap;
+    float:none;
+    justify-content: center;
+    align-content: center;
+    margin-left: auto;
+}
+
+.card{
+    background-color: var(--bs-card-bg)!important;
+    color:var(--bs-body-color)!important;
+}
