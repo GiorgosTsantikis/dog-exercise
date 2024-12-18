@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ThemeContext } from "../context/ThemeContext";
-import logo from '../assets/logo.svg';
+import logo from '../assets/logo.svg'
 import { Button } from "react-bootstrap"
 export default function Heading(){
 
@@ -10,16 +10,17 @@ export default function Heading(){
     
 
     const navigate=useNavigate();
-    const handleLogout=()=>{
+    function handleLogout(evt){
+        console.log("logout");
+        
         localStorage.removeItem("token");
-        navigate("/login");
     }
 
     return (
 
         <nav className="navbar navbar-expand-sm  ">
             <div className="container-fluid">
-            <Link to="/">
+            <Link to="/home">
     <img className="navbar-brand" src={logo}/>
            </Link>
            <button
@@ -36,22 +37,25 @@ export default function Heading(){
            <div className="collapse navbar-collapse justify-content-center" id="navbarNav">
             <ul className="navbar-nav">
                 <li className="nav-item">
-                    <Link className="nav-link" to="/">Home</Link>
+                    <Link className="nav-link" to="/home">Home</Link>
                 </li>
                 <li className="nav-item">
                     <Link className="nav-link" to="/addListing">Add Listing</Link>
                 </li>
                 <li className="nav-item">
-                    <Link className="nav-link" to="/profile/1">Profile</Link>
+                    <Link className="nav-link" to="/profile">Profile</Link>
                 </li>
 
 
                 <li className="nav-item">
-                    <Link className="nav-link"onClick={handleLogout}>Log-out</Link>
+                    <Link className="nav-link" onClick={handleLogout} to="/login">Log-out</Link>
+                </li>
+                <li className="nav-item">
+                <Button className="nav-link" onClick={toggleTheme}>Theme</Button>
                 </li>
                 
             </ul>
-            <Button onClick={toggleTheme}>Theme</Button>
+            
            </div>
             
             </div>

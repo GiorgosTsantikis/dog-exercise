@@ -3,6 +3,7 @@ import '../css/Home.css';
 import ListingCard from "./ListingCard";
 import axios from 'axios';
 import { Container } from "react-bootstrap";
+import {getListings} from "../services/ApiCalls";
 
 export default function Home(){
 
@@ -10,8 +11,7 @@ export default function Home(){
 
     useEffect( ()=>{
         async function fetch(){
-        const response=await axios.get(`/api/listings`
-            ,{headers:{"Content-Type":"application/json"},});
+        const response=await getListings();
         //setListing(response.data);
         console.log(response.data);
         setListings(response.data);

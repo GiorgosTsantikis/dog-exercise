@@ -4,6 +4,7 @@ import { useState } from "react";
 import house from "../assets/house.jpg";
 import '../css/Listing.css';
 import axios from 'axios';
+import {getListing} from '../services/ApiCalls'
 
 export default function Listing(){
 
@@ -13,8 +14,7 @@ export default function Listing(){
 
      useEffect( ()=>{
         async function fetch(){
-        const response=await axios.get(`/api/listings/${id}`
-            ,{headers:{"Content-Type":"application/json"},});
+        const response=await getListing(id);
         //setListing(response.data);
         console.log(response.data);
         setListing(response.data);

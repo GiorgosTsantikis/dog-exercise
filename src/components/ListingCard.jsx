@@ -6,7 +6,7 @@ export default function ListingCard(props){
 
     return (
         <section className="card" >
-            <Link to={`listing/${id}`} className="nav-link">
+            <Link to={`/listing/${id}`} className="nav-link">
             <img src={house} className="card-img-top"/>
             <div className="card-body">
                 <h5 className="card-title">{name}</h5>

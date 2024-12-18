@@ -1,0 +1,15 @@
+services:
+  frontend:
+    build:
+      context: ./
+    ports:
+      - "5773:73"  # Expose frontend port
+    environment:
+      - VITE_BACKEND_URL=http://backend:8080  # Set backend URL inside the container
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+    

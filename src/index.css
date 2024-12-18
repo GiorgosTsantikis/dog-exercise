@@ -19,7 +19,25 @@
     --bs-card-bg: #1c1c1c;
     --bs-card-border-color: #343a40;
     --bs-card-color:#343a40;
+    --bs-nav-link-color:#e4e4e4 !important;
+    --bs-navbar-color:#e4e4e4;
+    --bs-navbar-active-color:#e4e4e4;
+    --bs-navbar-toggler-border-color:#e4e4e4 !important;
+    
   }
+
+  [data-theme="dark"] .nav-link {
+    color: #e4e4e4 !important;
+  }
+
+  [data-theme="dark"] .navbar-toggler-icon {
+    background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3E%3Cpath stroke='gray' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
+  }
+
+  [data-theme="dark"] .navbar-toggler{
+    border-color:#e4e4e4;
+  }
+  
   
   /* Transition for smooth changes */
   body {

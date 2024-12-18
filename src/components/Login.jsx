@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import { Container,Button,Form,FormGroup, Accordion } from "react-bootstrap";
 import Signup from "./Signup";
+import {login,logInAction} from "../services/ApiCalls";
 
 const Login = () => {
     const [formData, setFormData] = useState({ username: "", password: "" });
@@ -14,17 +15,17 @@ const Login = () => {
         localStorage.clear();
         e.preventDefault();
         try {
-            const response = await axios.post("api/auth/login", {...formData},{headers:{Authorization:''}});
+            const response = await login(formData);
             const token = response.data.token;
             
-            localStorage.setItem("token", token); // Store the JWT in localStorage
-            console.log("Login successful!");
-            window.location.href="/";
+           logInAction(token);
         } catch (error) {
-            console.error("Login failed:", error);
+            console.log("Login failed:", error);
             alert("Invalid credentials");
         }
     };
+
+    
 
     return (
         <>

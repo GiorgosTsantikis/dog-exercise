@@ -12,7 +12,8 @@ const ThemeProvider=({children})=>{
     };
 
     return(
-        <ThemeContext.Provider value={{theme,toggleTheme}}>
+        <ThemeContext.Provider value={{theme,toggleTheme}}  breakpoints={['xxxl', 'xxl', 'xl', 'lg', 'md', 'sm', 'xs', 'xxs']}
+        minBreakpoint="xxs">
             {children}
         </ThemeContext.Provider>
     );

@@ -1,8 +1,10 @@
 import React, { useState } from "react";
-import { Form,FormText,FormControl, Container ,Button, OverlayTrigger,Tooltip} from "react-bootstrap";
+import { Form,FormText,FormControl, Container ,Button, OverlayTrigger,Tooltip, ListGroup} from "react-bootstrap";
 import { validateEmail,validatePassword,validatePhoneNumber,validateUsername,matchPassword } from "../validation/validation";
 import useForm from "../hooks/useForm";
 import axios from "axios";
+import { signUp,login, logInAction } from "../services/ApiCalls";
+import { clippingParents } from "@popperjs/core";
 
 export default function Signup(){
 
@@ -20,17 +22,18 @@ export default function Signup(){
 
     const onSubmit=async (data)=>{
         settUserTaken(false);
-         axios.post(`/api/auth/register`,
-            data,{headers:{"Content-Type":"application/json"}})
-            .then((res)=>{
-                console.log(res.data);
-            })
+        const response=await signUp(data)
             .catch((err)=>{
                 console.log(err.response.data);
                 if(err.response.data==="Username taken"){
                     settUserTaken(true);
                 }
             })
+        console.log(response);
+        const token=(await login({...data})).data.token;
+        logInAction(token);
+
+        
         //setListing(response.data);
     }
     
