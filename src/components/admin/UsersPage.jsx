@@ -1,10 +1,9 @@
 import React, { useEffect,useState } from "react";
 import { getUsersAdmin } from "../../services/ApiCalls";
-import { isAdmin } from "../../services/Authentication.service";
 import UserComponent from "./UserComponent";
+import { Container } from "react-bootstrap";
 
 export default function UsersPage(){
-    const token=localStorage.getItem("token");
     const [usersList,setUsersList]=useState([]);
     var users;
 
@@ -13,22 +12,24 @@ export default function UsersPage(){
         console.log("make me admin",username);
     }
     useEffect(()=>{
-    if(token && isAdmin(token)){
-        
             async function fetch(){
-                 const response=await getUsersAdmin(token);
+                 const response=await getUsersAdmin();
                  users=response.data;
                  setUsersList(users);
                  console.log(users);
             }
             fetch();
-        }},[])
+        },[])
 
     
 
     return (
 
-        <div>{usersList.map(user=><UserComponent key={user.id} props={user} makeAdmin={makeAdmin}/>) }</div>
+        <Container className="py-4">
+            <div className="row">
+            {usersList.map(user=><div className="col-md-4" key={user.id}><UserComponent key={user.id} props={user} makeAdmin={makeAdmin}/></div>) }
+            </div>
+        </Container>
     )
 
 }

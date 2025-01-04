@@ -1,22 +1,49 @@
 
 .expanded h2 {
-    font-size:2px !important;
+    font-size:10px !important;
+    justify-self: center;
     padding:0px !important;
-    height:20px;
-    line-height:2px !important;
+    height:20px !important;
+    line-height:5px !important;
+    text-aling:center;
 }
 
 .expanded button{
-    font-size:2px !important;
+    font-size:10px !important;
+    align-items: center;
     padding:0px !important;
     height:20px;
-    line-height:2px !important;
+    line-height:5px !important;
+}
+
+.expanded.acordion-header{
+    display:flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.acordion-header h2{
+    text-align: center;
 }
 
 .collapsed {
     font-size:20px;
 }
 
-.collapsed buton{
+.collapsed button{
     font-size:15px !important;
 }
+
+.acordion-header{
+    transition: height 0.3s ease;
+    justify-content: center;
+    align-items: center;
+    align-content: center;
+}
+
+.accordion-body {
+    transition: height 0.3s ease; /* smooth transition */
+   
+  }
+  
+ 

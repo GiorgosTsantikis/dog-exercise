@@ -10,3 +10,49 @@
     margin-top:5px;
     margin-left:10px;
 }
+
+.container{
+    /*margin-left:10px;*/
+}
+
+.profilebtn{
+    background-color: #343a40;
+    border-color: #343a40;
+}
+
+.card-body{
+    background-color: var(--bs-card-border-color);
+}
+
+button:hover{
+    background-color: #4c5a69 ;
+}
+
+.nav-item button:hover{
+    background-color: #e4e4e4 !important;
+    color:var(--bs-secondary) !important;
+}
+
+.profilebtn:hover{
+    background-color: #4c5a69;
+    border-color:#4c5a69;
+}
+
+[data-theme="dark"] {
+    --bs-body-bg: #121212;
+    --bs-body-color: #e4e4e4;
+  
+    --bs-primary: #6c7581;
+    --bs-secondary: #9ea7ad;
+    --bs-card-bg: #8d2c2c !important;
+    --bs-card-border-color: #343a40;
+    --bs-card-color:#4c5a69;
+    --bs-nav-link-color:#e4e4e4 !important;
+    --bs-navbar-color:#e4e4e4;
+    --bs-btn-color:var(--bs-body-bg) !important;
+    --bs-navbar-active-color:#e4e4e4;
+    --bs-navbar-toggler-border-color:#e4e4e4 !important;
+    --bs-btn-bg:var(--bs-card-color) !important;
+    --bs-btn-active-bg:var(--bs-card-color);
+    --bs-btn-active-border-color:var(var(--bs-card-color));
+}

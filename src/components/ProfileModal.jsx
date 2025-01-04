@@ -19,7 +19,6 @@ export default function ProfileModal(props){
   function handleSubmit(evt){
     evt.preventDefault();
     console.log(evt);
-    const token=localStorage.getItem("token");
     if(file){
       postProfilePic(file);
       props.hide(); 

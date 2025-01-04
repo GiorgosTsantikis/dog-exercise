@@ -1,8 +1,8 @@
 
 import React,{useState} from "react";
 import {Form,Button,Container,Row,Col} from 'react-bootstrap';
+import { postListing } from "../services/ApiCalls";
 import 'bootstrap/dist/css/bootstrap.min.css';
-import axios from 'axios';
 
 
 
@@ -18,12 +18,11 @@ export default function AddListing(){
     const  handleSubmit=async (e)=>{
         e.preventDefault();
         console.log("submit ", {...formData});
-        const response=await axios.post(`/api/listings`,
-            formData
-        
-            ,{headers:{"Content-Type":"application/json"},});
+        const response=await postListing(formData);
         //setListing(response.data);
-        console.log(response.data);
+        if(response.status===200){
+            window.location.href="/home";
+        }
     }
     
 

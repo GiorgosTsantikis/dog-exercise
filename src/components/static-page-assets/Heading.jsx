@@ -1,8 +1,9 @@
 import React, { useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { ThemeContext } from "../context/ThemeContext";
-import logo from '../assets/logo.svg'
+import { ThemeContext } from "../../context/ThemeContext";
+import logo from '../../assets/logo.svg'
 import { Button } from "react-bootstrap"
+import { isAdmin } from "../../services/Authentication.service";
 export default function Heading(){
 
     
@@ -36,6 +37,9 @@ export default function Heading(){
         </button>
            <div className="collapse navbar-collapse justify-content-center" id="navbarNav">
             <ul className="navbar-nav">
+                {isAdmin() && <li className="nav-item">
+                    <Link className="nav-link" to="/admin/users">Users</Link>
+                </li>}
                 <li className="nav-item">
                     <Link className="nav-link" to="/home">Home</Link>
                 </li>

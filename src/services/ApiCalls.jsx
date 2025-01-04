@@ -1,97 +1,99 @@
 import axios from 'axios';
 
-import { isAdmin } from './Authentication.service';
+import { getKeycloakInstance } from './KeycloakService';
+
+const resourceServer=import.meta.env.VITE_API_BASE_URL;
+
+axios.interceptors.request.use(request=>{
+    const excludedPaths=['/auth/register'];
+    if(excludedPaths.some(path=>request.url.includes(path))){
+        return request;
+    }
+    const token=getKeycloakInstance().token;
+    if(token){
+        request.headers['Authorization']=`Bearer ${token}`;
+    }
+    return request;
+},error=>{
+    return Promise.reject(error);
+});
+
+axios.interceptors.response.use(
+    response=>response,
+    async error=>{
+        const keycloak=getKeycloakInstance();
+        const originalRequest=error.config;
+        if(error.response.status === 401 && !originalRequest._retry){
+            originalRequest._retry=true;
+            try{
+                await keycloak.updateToken();
+                return axios(originalRequest);
+            }catch(error) {
+                keycloak.login();
+                return Promise.reject(error);
+            }
+        }
+    }
+);
+
 
 export  async function getListing(id){
-    const token=localStorage.getItem("token");
-   return await axios.get(`/api/listings/${id}`
-        ,{headers:{"Content-Type":"application/json",
-            "Authorization":`Bearer ${token}`
-        },})
+   return await axios.get(`${resourceServer}/listings/${id}`
+        ,{headers:{"Content-Type":"application/json"},})
         .catch((err)=>{
-            console.log("status",err.status)
-            if(err.status===403){
-                window.location.href="/home";
-            }
+            console.log("status",err.status);
+            return Promise.reject(error);
         })
             
 }
 
 export  async function getListings(){
-    const token=localStorage.getItem("token");
-    return await axios.get(`/api/listings`
-        ,{headers:{"Content-Type":"application/json",
-            "Authorization":`Bearer ${token}`},})
+    return await axios.get(`${resourceServer}/listings`
+        ,{headers:{"Content-Type":"application/json"}})
             .catch((err)=>{
-                if(err.status===403)
-                    window.location.href="/login";
-})
-                
+                return Promise.reject(error);
+})               
 }
 
-export  async function login(formData){
-    const token=localStorage.getItem("token");
-    if(token){
-        localStorage.removeItem("token");
-    }
-    return await axios.post("api/auth/login", {...formData},{headers:{Authorization:''}})
+export async function postListing(form){
+    return axios.post(`${resourceServer}/listings`,
+        form
+        ,{headers:{"Content-Type":"application/json"},})
+        .catch(err=>{
+            return Promise.reject(error);
+        });
     
 }
+ 
 
-export async function signUp(data){
-    return await axios.post(`/api/auth/register`,
-        data,{headers:{"Content-Type":"application/json"}});
-}
 
-export function logInAction(token){
-    
-     localStorage.setItem("token", token); // Store the JWT in localStorage
-     console.log("Login successful!", " ",token);
-     console.log(isAdmin(token));
-     if(isAdmin(token)) window.location.href="/admin/users";
-     else window.location.href="/home";
-}
+
 
 export async function getProfile(){
-    const token=localStorage.getItem("token");
-    console.log(token);
-    return await axios.get(`/api/users/profile`,{
-        headers:{"Authorization":`Bearer ${token}`}
-    })
+    return await axios.get(`${resourceServer}/users/profile`)
     .catch(err=>{
         console.log(err);
-        if(err.status===403){
-            window.location.href="/login";
-
-        }
-    }
-    )
+        return Promise.reject(err);
+    })
 }
 
 export async function getProfilePic(){
-    const token=localStorage.getItem("token");
-    return await axios.get(`/api/users/picture`,{
-        headers:{"Authorization":`Bearer ${token}`}
-    })
+    return await axios.get(`${resourceServer}/users/picture`)
     .catch(err=>console.log(err))
 }
 
-export async function getUsersAdmin(token){
-    if(isAdmin(token)){
-        return await axios.get(`/api/admin/allUsers`,{
-            headers:{"Authorization":`Bearer ${token}`}
-        })
+export async function getUsersAdmin(){
+        return await axios.get(`${resourceServer}/admin/allUsers`)
         .catch(err=>console.log(err));
-    }
 }
 
-export async function postProfilePic(pic,token){
+export async function postProfilePic(pic){
     if(pic){
         const formData=new FormData();
         formData.append("img",pic);
 
-        return await axios.post(`/api/users/pic`,formData,{
-            headers:{"Authorization":`Bearer ${token}`,"Content-Type":"multipart/form-data"}
+        return await axios.post(`${resourceServer}/users/pic`,formData,{
+            headers:{"Content-Type":"multipart/form-data"}
         })
         .catch(err=>{
             console.log(err);

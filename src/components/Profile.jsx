@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import {getProfile,getProfilePic} from '../services/ApiCalls';
-import { Card, Col, Container, Image,Button } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
+import { Card, Form, Image,Button, CardHeader, CardBody } from 'react-bootstrap';
 import '../css/Profile.css';
 import ProfileModal from './ProfileModal';
 
@@ -9,10 +8,25 @@ import ProfileModal from './ProfileModal';
 export default function Profile(){
 
     const [user,setUser]=useState(null);
+    const [input,setInput]=useState("");
     const[profilePicPopup,setProfilePicPopup]=useState(false);
 
     const toggleProfilePicpopup=()=>{
         setProfilePicPopup(!profilePicPopup);
+    }
+
+    function handleSubmit(e){
+        e.preventDefault();
+        
+
+        console.log(user.username);
+        
+
+    }
+
+    function handleChange(e){
+        setInput(e.target.value);
+
     }
 
     useEffect(()=>{
@@ -47,6 +61,7 @@ export default function Profile(){
 
     return (
         <>
+        <div className='py-4 container'>
         <Card style={{width: '20rem'}}>
             <Card.Body>
                 <Card.Title>{user.username}</Card.Title>
@@ -57,7 +72,7 @@ export default function Profile(){
             <Image src={user.photo} onClick={toggleProfilePicpopup} roundedCircle/>
         
         :
-        <Button onClick={toggleProfilePicpopup}>Upload picture</Button>}
+        <Button className='profilebtn' onClick={toggleProfilePicpopup}>Upload picture</Button>}
 
         <Card.Text>{user.email}</Card.Text>
        
@@ -65,6 +80,26 @@ export default function Profile(){
         </Card>
         
             <ProfileModal show={profilePicPopup} hide={toggleProfilePicpopup}/>
+        </div>
+        <div className='py-4 container'>
+            <Card>
+                <Card.Header>Add friend</Card.Header>
+                <Card.Body>
+                <Form onSubmit={handleSubmit}>
+                <Form.Group className="mb-3" controlId="formName">
+                    <Form.Label>Name</Form.Label>
+                    <Form.Control
+                    type="text"
+                    name="name"
+                    value={input}
+                    onChange={handleChange}
+                    placeholder="Email or Username"/>
+                </Form.Group>
+                <Button variant="primary" className='profilebtn' type="submit">Send</Button> 
+                </Form>
+                </Card.Body>
+            </Card>
+        </div>
         </>
 
        

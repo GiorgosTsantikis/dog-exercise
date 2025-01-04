@@ -1,0 +1,92 @@
+/* Align icons and labels in sidebar */
+.navbar-nav {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .navbar-nav li {
+    padding: 15px 10px;
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid #e5e5e5;
+    
+  }
+  
+  .navbar-nav li a {
+    text-decoration: none;
+    color: var(--bs-secondary);
+    display: flex;
+    align-items: center;
+    gap: 10px; /* Space between icon and label */
+  }
+  
+  .navbar-nav li a:hover {
+    background-color: #e5e5e5a1;
+    color: var(--bs-secondary);
+   
+    
+    
+  }
+  
+  .navbar-nav li .nav-label {
+    display: inline-block;
+    transition: opacity 0.3s ease-out;
+  }
+  
+  .sideBarMenuContainer {
+    width: 60px; /* Collapsed width */
+    height: 100%;
+    position: fixed;
+    z-index: 1000;
+    transition: width 0.3s ease-out;
+    background-color: var(--bs-body-bg);
+
+   
+    
+  }
+  
+  .sideBarMenuContainer:hover {
+    width: 200px; /* Expanded width */
+  }
+  
+  .sideBarMenuContainer:hover .nav-label {
+    opacity: 1;
+  }
+  
+  .sideBarMenuContainer .nav-label {
+    opacity: 0;
+    white-space: nowrap;
+  }
+
+  @media (max-width: 576px) {
+    .sideBarMenuContainer {
+      width:20px;
+      text-align: end;
+      vertical-align: right;
+      overflow: hidden;
+    }
+
+    .sideBarMenuContainer:hover {
+      width: 100px; /* Expanded width */
+    }
+
+    
+
+    .nav-icon{
+      margin: 0;
+      padding: 0;
+      justify-self: right;
+    }
+
+    .navbar-nav li {
+      align-items: right; /* Center items for mobile */
+      margin: 0%;
+      padding: 0%;
+    }
+  
+    .nav-label {
+      display: none; /* Hide labels for very small screens */
+    }
+  }
+  
