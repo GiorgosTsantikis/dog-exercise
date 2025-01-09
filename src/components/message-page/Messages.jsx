@@ -1,34 +1,44 @@
 import React, { useEffect ,useState} from "react";
 import MessagingService from "../../services/MessagingService";
 import { getKeycloakInstance } from "../../services/KeycloakService";
+import { getProfile } from "../../services/ApiCalls";
+import { Container } from "react-bootstrap";
+import FriendRow from "./FriendRow";
+import sendPrivateMessage from "../../services/MessagingService";
 
 export default function Messages(){
 
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
+  const [friends,setFriends]=useState([]);
   const keycloak=getKeycloakInstance();
 
-    useEffect(()=>{
-        MessagingService.connect((message)=>{
-            setMessages((prevMsgs)=>[...prevMsgs,message]);
-        });
 
-        return () => MessagingService.disconnect();
+    useEffect(()=>{
+      async function fetchFriends(){
+        const resp=await getProfile();
+        console.log(resp.data,"friends");
+        setFriends(resp.data.friends);
+      }
+      fetchFriends();
+       
     },[]);
 
-    const handleSendMessage = () => {
-        if (newMessage.trim()) {
-          const messageObject = {
-            sender: keycloak.clientId, // Replace with actual sender info
-            content: newMessage,
-          };
-          MessagingService.sendMessage(messageObject);
-          setNewMessage("");
-        }
-      };
+   
+
+    function sendMessage(id){
+      console.log("send to ",id);
+      sendPrivateMessage(id,"lalala");
+    }
+
+    
+    
+      if(!friends){return <div>Loading!</div>}
 
     return(
+        <>
         
+            <Container className="py-4 container" fluid>{friends.map(friend=><FriendRow  key={friend.friendId} props={friend} sendMessage={sendMessage}/>)}</Container>
             <div className="py-4 container">
               <h2>Chat</h2>
               <div
@@ -51,8 +61,9 @@ export default function Messages(){
                 onChange={(e) => setNewMessage(e.target.value)}
                 placeholder="Type a message..."
               />
-              <button onClick={handleSendMessage}>Send</button>
+              <button onClick={sendMessage}>Send</button>
             </div>
+           </>
           );
     
 }

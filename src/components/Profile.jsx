@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import {getProfile,getProfilePic} from '../services/ApiCalls';
+import {acceptRequest, friendRequest, getProfile,getProfilePic} from '../services/ApiCalls';
 import { Card, Form, Image,Button, CardHeader, CardBody } from 'react-bootstrap';
 import '../css/Profile.css';
 import ProfileModal from './ProfileModal';
@@ -9,24 +9,33 @@ export default function Profile(){
 
     const [user,setUser]=useState(null);
     const [input,setInput]=useState("");
+    const [friendList,setFriendList]=useState([]);
     const[profilePicPopup,setProfilePicPopup]=useState(false);
 
     const toggleProfilePicpopup=()=>{
         setProfilePicPopup(!profilePicPopup);
     }
 
-    function handleSubmit(e){
+    async function handleSubmit(e){
         e.preventDefault();
-        
+        const response= await friendRequest(input);
 
-        console.log(user.username);
+        console.log(response.data);
         
 
     }
+    
 
     function handleChange(e){
         setInput(e.target.value);
+    }
 
+    async function acceptFriendRequest(e){
+        const response=await acceptRequest(e.target.value);
+        setFriendList((await getProfile()).data.friends);
+        console.log(response.data);
+        
+        
     }
 
     useEffect(()=>{
@@ -41,8 +50,8 @@ export default function Profile(){
             setUser({...response.data,photo:result});
         }else{
             setUser({...response.data});
+            setFriendList(response.data.friends);
         }
-       
         console.log("user",user);
         }
         fetch();
@@ -100,6 +109,11 @@ export default function Profile(){
                 </Card.Body>
             </Card>
         </div>
+
+        <div className='py-4 container'>Accepted:{(user.friends.filter((x)=>x.status.includes('ACCEPTED'))).map(x=>x.friendId)}</div>
+        <div className='py-4 container'>Pending:{(user.friends.filter((x)=>x.status.includes('PENDING_SENDER'))).map(x=>x.friendId)}</div>
+        <div className='py-4 container'>Requests:{(user.friends.filter((x)=>x.status.includes('PENDING_RECEIVER'))).map(x=><button onClick={acceptFriendRequest} value={x.friendId}>{x.friendId}</button>)}</div>
+
         </>
 
        

@@ -13,6 +13,8 @@ import AdminRoute from './RouteRestrictions/AdminRoute';
 import UsersPage from './components/admin/UsersPage';
 import { getKeycloakInstance } from './services/KeycloakService';
 import Messages from './components/message-page/Messages';
+import log from './services/logger';
+
 
 function App() {
 
@@ -64,6 +66,7 @@ function App() {
   useEffect(()=>{
     async function keycloakInit(){
       const keycloak=getKeycloakInstance();
+      log.debug("keycloak token",keycloak.token);
       
     }
     keycloakInit();

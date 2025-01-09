@@ -1,54 +1,72 @@
 import { Client } from "@stomp/stompjs";
 import { getKeycloakInstance } from "./KeycloakService";
+import applicationLogger from "./logger";
 
 
 const chatEndpoint=import.meta.env.VITE_CHAT_URL;
 
-class MessagingService{
 
-    resourceServer=import.meta.env.VITE_API_BASE_URL;
+const resourceServer=import.meta.env.VITE_API_BASE_URL;
 
-    constructor(){
-        this.client=new Client();
-    }
+const token=getKeycloakInstance().token;
+var client;
 
-    connect(onMessageReceived) {
-        const token=getKeycloakInstance().token;
-        console.log("MESSAGE TOKEN? ",token);
-        this.client.configure({
-          brokerURL: chatEndpoint,
+await getKeycloakInstance().loadUserInfo().then(
+  userInfo=>{
+    const id=userInfo['sub'];
+     client=new Client(
+      {
+        brokerURL: chatEndpoint,
+        connectHeaders: {
+          'Authorization': `Bearer ${token}`,  // Include the token in the headers
+        },
+        onConnect: () => {
+          console.log('Connected to WebSocket',id);
           
-          connectHeaders:{
-            Authorization: `Bearer ${token}`,
-          },
-          onConnect: () => {
-            this.client.publish({
-              destination:"/app/authenticate",
-              body:JSON.stringify({token})
-            });
-            this.client.subscribe("/app/messages", (message) => {
-              onMessageReceived(JSON.parse(message.body));
-            });
-          },
-          debug: (str) => console.log(str),
-        });
-        this.client.activate();
-      }
-    
-      sendMessage(message) {
-        if (this.client.connected) {
-          this.client.publish({
-            destination: "/app/sendMessage",
-            body: JSON.stringify(message),
+          client.subscribe(`/user/${id}/queue/messages`, (message) => {
+            const msg = JSON.parse(message.body);
+            console.log('Received private message:', msg);
           });
-        }
-      }
+        },
+        onStompError: (frame) => {
+          console.error('STOMP error', frame);
+        },
+        debug: (str) => {
+          //console.log(str);
+        },
+      });
+      
+      // Activate the client (open WebSocket connection)
+      client.activate();
+
+
+  }
+);
+
+
+
+
+
+function sendPrivateMessage(userId, message) {
+  if(!client){return;}
+  const msg = JSON.stringify({
     
-      disconnect() {
-        this.client.deactivate();
-      }
+    message: message,
+    date: new Date().toISOString(),
+  });
+  
+  // Send the message to the server
+  client.publish({
+    destination: `/app/user/${userId}/queue/messages`,
+    body: msg,
+  });
 }
 
-export default new MessagingService();
+export default sendPrivateMessage;
 
+  
+       
+    
+
+    
 
