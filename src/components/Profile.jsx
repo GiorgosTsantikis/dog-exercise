@@ -18,9 +18,11 @@ export default function Profile(){
 
     async function handleSubmit(e){
         e.preventDefault();
-        const response= await friendRequest(input);
-
-        console.log(response.data);
+        const response= await friendRequest(input)
+        .then(async (data)=>{
+            await fetchData();
+        });
+        
         
 
     }
@@ -32,18 +34,16 @@ export default function Profile(){
 
     async function acceptFriendRequest(e){
         const response=await acceptRequest(e.target.value);
-        setFriendList((await getProfile()).data.friends);
+        await fetchData();
         console.log(response.data);
         
         
     }
 
-    useEffect(()=>{
-    async function fetch(){
+    async function fetchData(){
         const response=await getProfile();
         var pic="data:image/jpeg;base64,";
         const picBase64=await getProfilePic();
-        console.log(picBase64);
         if(picBase64){
             let result=pic.concat(picBase64.data);
             console.log(pic);
@@ -52,9 +52,13 @@ export default function Profile(){
             setUser({...response.data});
             setFriendList(response.data.friends);
         }
-        console.log("user",user);
+       
+    
         }
-        fetch();
+
+    useEffect(()=>{
+    
+        fetchData();
     },[])
 
     
@@ -109,10 +113,10 @@ export default function Profile(){
                 </Card.Body>
             </Card>
         </div>
-
-        <div className='py-4 container'>Accepted:{(user.friends.filter((x)=>x.status.includes('ACCEPTED'))).map(x=>x.friendId)}</div>
-        <div className='py-4 container'>Pending:{(user.friends.filter((x)=>x.status.includes('PENDING_SENDER'))).map(x=>x.friendId)}</div>
-        <div className='py-4 container'>Requests:{(user.friends.filter((x)=>x.status.includes('PENDING_RECEIVER'))).map(x=><button onClick={acceptFriendRequest} value={x.friendId}>{x.friendId}</button>)}</div>
+        
+        <div className='py-4 container'>Accepted:{(user.friends !=null) && (user.friends.filter((x)=> x.status && x.status.includes('ACCEPTED'))).map(x=>x.friendId)}</div>
+        <div className='py-4 container'>Pending:{(user.friends !=null) && (user.friends.filter((x)=> x.status && x.status.includes('PENDING_SENDER'))).map(x=>x.friendId)}</div>
+        <div className='py-4 container'>Requests:{(user.friends != null) && (user.friends.filter((x)=>x.status && x.status.includes('PENDING_RECEIVER'))).map(x=><button onClick={acceptFriendRequest} value={x.friendId}>{x.friendId}</button>)}</div>
 
         </>
 

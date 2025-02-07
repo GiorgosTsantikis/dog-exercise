@@ -7,7 +7,7 @@ import applicationLogger from './logger';
 const resourceServer=import.meta.env.VITE_API_BASE_URL;
 
 axios.interceptors.request.use(request=>{
-    applicationLogger.debug("ApiCalls.tokenInterceptor on request ",request.headers);
+    applicationLogger.debug("ApiCalls.tokenInterceptor on request to: ",request.url);
     const excludedPaths=['/auth/register'];
     if(excludedPaths.some(path=>request.url.includes(path))){
         applicationLogger.debug("ApiCalls.tokenInterceptor excluded path sending request as is");
@@ -15,9 +15,8 @@ axios.interceptors.request.use(request=>{
     }
     const token=getKeycloakInstance().token;
     if(token && request.headers['Authorization']!==`Bearer ${token}`){
-        applicationLogger.debug("are they different not equal? old",request.headers['Authorization'],"new ",`Bearer ${token}`)
         request.headers['Authorization']=`Bearer ${token}`;
-        applicationLogger.debug("ApiCalls.tokenInterceptor attaching keycloak token",request.headers);
+        applicationLogger.debug("ApiCalls.tokenInterceptor attaching keycloak token");
     }
     return request;
 },error=>{
@@ -77,7 +76,12 @@ export async function postListing(form){
             applicationLogger.error("ApiCalls.postListing error",err);
             return Promise.reject(error);
         });
-    
+}
+
+export async function getFriendsData(id){
+    applicationLogger.debug("ApiCalls.getFriendsData(",id,")");
+    return axios.get(`${resourceServer}/users/friends/${id}`)
+    .catch(error=>applicationLogger.error(error));
 }
 
 export async function friendRequest(usernameOrEmail){
@@ -85,6 +89,7 @@ export async function friendRequest(usernameOrEmail){
 
     return axios.post(`${resourceServer}/users/friendRequest/${usernameOrEmail}`)
     .catch(err=>{
+        applicationLogger.error("ApiCalls.friendRequest error",err);
         return Promise.reject(error);
     });
 }
@@ -94,6 +99,15 @@ export async function acceptRequest(id){
     return axios.post(`${resourceServer}/users/acceptRequest/${id}`)
     .catch(err=>{
         return Promise.reject(error);
+    })
+}
+
+export async function getMessagesBetweenTwoUsers(id1,id2,page){
+    applicationLogger.debug("ApiCalls.getMessagesBetweenTwoUsers( ",id1," , ",id2," )");
+    return axios.get(`${resourceServer}/users/messages/${id1}/${id2}?page=${page}&size=${10}`)
+    .catch(error=>{
+        applicationLogger.error("ApiCalls.getMessagesBetweenTwoUsers error",err);
+
     })
 }
  
@@ -130,7 +144,7 @@ export async function postProfilePic(pic){
     if(pic){
         const formData=new FormData();
         formData.append("img",pic);
-        applicationLogger("sending img ",pic);
+        applicationLogger.debug("sending img ",pic);
 
         return await axios.post(`${resourceServer}/users/pic`,formData,{
             headers:{"Content-Type":"multipart/form-data"}
@@ -143,11 +157,14 @@ export async function postProfilePic(pic){
 }
 
 export async function sendLogs(logs){
-    applicationLogger.debug("sending logs...");
-    return await axios.post(`${resourceServer}/logs/sendLogs`,logs,
-        {headers:{"Content-Type":"application/json"}}
-    )
-    .catch(error=>{
-        applicationLogger.error("error sending logs",error);
-    })
+    if(getKeycloakInstance().authenticated){
+        applicationLogger.debug("sending logs...");
+        return await axios.post(`${resourceServer}/logs/sendLogs`,logs,
+            {headers:{"Content-Type":"application/json"}}
+        )
+        .catch(error=>{
+            applicationLogger.error("error sending logs",error);
+        })
+    }
+   
 }

@@ -8,6 +8,7 @@ const ThemeProvider=({children})=>{
     const toggleTheme=()=>{
         const newTheme=theme==="light"?"dark":"light";
         setTheme(newTheme);
+        sessionStorage.setItem("theme",newTheme);
         document.documentElement.setAttribute("data-theme",newTheme);
     };
 

@@ -1,19 +1,27 @@
 import React from "react";
-import { Row,Col, Button } from "react-bootstrap";
+import { Row,Col, Button,Image } from "react-bootstrap";
 import applicationLogger from "../../services/logger";
 
 export default function FriendRow(props){
+
+    const{id,email,firstName,lastName,profilePic,username}=props.props.userDetails;
+    var pic="data:image/jpeg;base64,".concat(props.props.pic);
+    
+
 
     function handleSendMessage(evt){
         props.sendMessage(evt.target.value);
     }
 
-    const{friendId,status}=props.props;
-    applicationLogger.debug(friendId,status,props," FriendRow");
+
+    applicationLogger.debug(id,email,username," FriendRow");
     return(
         <>
         <Row>
-            <Col>{`${friendId}, ${status}`}<Button onClick={handleSendMessage} value={friendId}>Send Message</Button></Col>
+            <Col>
+            <Image src={`${pic}`} roundedCircle/>
+            {`${username}, ${email}`}<Button onClick={handleSendMessage} value={id}>Send Message</Button>
+            </Col>
         </Row>
           
         </>

@@ -1,0 +1,7 @@
+.whatever{
+    flex:1;
+}
+.message-container{
+    overflow-y: auto;
+    height:80vh;
+}

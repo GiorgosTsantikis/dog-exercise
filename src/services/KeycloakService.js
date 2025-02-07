@@ -1,5 +1,7 @@
 import Keycloak from "keycloak-js";
 import { redirect } from "react-router-dom";
+import applicationLogger from "./logger";
+import { initializeMessages, updateToken } from "./MessagingService";
 
 
 const keycloakUrl=import.meta.env.VITE_KEYCLOAK_URL;
@@ -12,23 +14,55 @@ const  keycloak = new Keycloak({
         url: `${keycloakUrl}`, // Keycloak server URL
         realm: `${realm}`, // Your realm
         clientId: `${clientId}`,
-       credentials:{
-            secret:`${clientSecret}`
-        } // Your client ID
     });
 
+    export const getKeycloakInstance = () => {
+    
+        if(keycloak)
+            return keycloak;
+    };
+
 try{
-    const authenticated=await keycloak.init({ onLoad:'login-required',flow:'hybrid',enableLogging:true})
+    const authenticated=await keycloak.init({ onLoad:'check-sso',flow:'hybrid',enableLogging:true})
+    .then(async ()=>{
+        await setUserInfo();
+        await initializeMessages();
+    });
+    
     
 }catch(error){console.log(error)}
 
+export async function setUserInfo(){
+    await keycloak.loadUserInfo()
+        .then(userInfo=>{
+            sessionStorage.setItem("userId",userInfo['sub']);
+            sessionStorage.setItem("username",userInfo['username']);
+        });
+}
 
 
-export const getKeycloakInstance = () => {
-    
-    if(keycloak)
-        return keycloak;
-};
+
+export  function isTokenExpired(){
+    applicationLogger.debug("KeycloakService.isTokenExpired()");
+        if(keycloak.isTokenExpired(300)){
+            applicationLogger.debug("KeycloakService.isTokenExpired() true");
+            return true;
+        }
+        return false;
+}
+
+export async function refreshToken(){
+    try{
+           keycloak.updateToken().then(refreshed=>{
+            applicationLogger.debug("KeycloakService.refreshToken UPDATED TOKEN SUCCESSFULLY",keycloak.token);
+            updateToken(keycloak.token)});
+    }catch(err){
+        applicationLogger.error("KeycloakService.refreshToken error updating token",err);
+    }
+}
+
+
+
 
 export const logout = () => {
     if (keycloak) {
@@ -45,5 +79,9 @@ export const login = () => {
         }); // This triggers the redirect to Keycloak login page
     }
 };
+
+export async function getUserId(){
+
+}
 
 

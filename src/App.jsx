@@ -9,17 +9,27 @@ import {Route,Routes,Navigate} from 'react-router-dom';
 import { Accordion,AccordionBody,AccordionButton,AccordionHeader,AccordionItem } from 'react-bootstrap';
 import './css/App.css'
 import SidebarNav from './components/static-page-assets/SidebarNav';
+import Menu from './components/menu/menu';
 import AdminRoute from './RouteRestrictions/AdminRoute';
 import UsersPage from './components/admin/UsersPage';
-import { getKeycloakInstance } from './services/KeycloakService';
 import Messages from './components/message-page/Messages';
+import PrivateChat from './components/message-page/PrivateChat';
 import log from './services/logger';
+import { ToastContainer, toast } from "react-toastify";
+import { onMessage } from './services/MessagingService';
+import 'react-toastify/dist/ReactToastify.css';
 
 
 function App() {
 
   let debounceTimeout;
-  document.documentElement.setAttribute("data-theme","light");
+  if(!document.getElementsByTagName("html")[0].getAttribute("data-theme")){
+    if(!sessionStorage.getItem("theme")){
+      document.documentElement.setAttribute("data-theme","light");
+    }else{
+      document.documentElement.setAttribute("data-theme",sessionStorage.getItem("theme"));
+    }
+  }
   const random="";
   const [collapsedTopAccordion,setCollapsedTopAccordion]=useState(true);
   const [collapsedSideAccordion,setCollapsedSideAccordion]=useState(true);
@@ -53,27 +63,48 @@ function App() {
 
   // Collapse accordion on mouse leave
   function closeAccordion() {
-    
         setIsHovering(false);
         setActiveKey("1");
-    
     }
+
+    
   
- 
+    function handleNewMessage(evt){
+      console.log("received msg ",evt);
+      toast(
+ <>
+      <div>
+        <strong>From:</strong><em>{`${evt.detail.senderId}`}</em>
+      </div><div>{`${evt.detail.content}`}</div></>);
+    }
 
   
 
   useEffect(()=>{
+    const unsubscribe=onMessage(handleNewMessage);
     async function keycloakInit(){
-      const keycloak=getKeycloakInstance();
-      log.debug("keycloak token",keycloak.token);
+      //const keycloak=getKeycloakInstance();
+      log.debug("App.useEffect keycloakInit");
       
     }
-    keycloakInit();
+    //keycloakInit();
+    return unsubscribe;
   },[]);
 
   return (
     <>
+    <ToastContainer
+position="top-right"
+autoClose={5000}
+hideProgressBar={false}
+newestOnTop
+closeOnClick
+rtl={false}
+pauseOnFocusLoss
+draggable
+pauseOnHover
+theme="light"
+/>
 
 
     <Accordion style={{marginTop:"2px"}}  
@@ -104,6 +135,10 @@ function App() {
 
 
     <Routes>
+
+      <Route path="/menu/:id" element={
+          <Menu/>//remove after its done navigate this from stores page
+      }/>
       
       <Route path="/home" element={
        <ProtectedRoute>
@@ -126,20 +161,24 @@ function App() {
           </ProtectedRoute>
         }/>
 
-        <Route path="/messages" element={
-         
-            
-            <Messages/>
-           
-           
+        <Route path="/messages" element={ 
+          <ProtectedRoute>
+            <Messages/> 
+          </ProtectedRoute>
+        }/>
+
+        <Route path="/chat/:id" element={
+          <ProtectedRoute>
+            <PrivateChat/>
+          </ProtectedRoute>
         }/>
 
         <Route path="*" element={<Navigate to="/home"/>}/>
 
         <Route path="/admin/users" element={
         <AdminRoute>
-         <UsersPage/>
-         </AdminRoute>}/>
+          <UsersPage/>
+        </AdminRoute>}/>
     </Routes>
     </>
 

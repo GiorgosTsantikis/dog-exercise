@@ -29,7 +29,7 @@ export default function Home(){
             <div className="row">
                 {listings.map((item,index)=>(
                     <div className="col-md-4" key={index}>
-                    <ListingCard listing={item}  />
+                    <ListingCard listing={item}  key={index}/>
                     </div>
 
                 ))}

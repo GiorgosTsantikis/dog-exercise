@@ -1,0 +1,16 @@
+.row{
+    height:100px;
+}
+.rounded-circle{
+   
+    width: 75px;
+    height: 80px;
+    margin:0;
+    padding-left: 0px;
+}
+
+.message-row{
+    margin-left:6vh;
+    overflow-y: scroll;
+}
+
